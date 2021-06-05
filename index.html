@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="build/main.js"></script>
+</head>
+<body>
+<style>
+    body {
+        margin: 0;
+    }
+
+    #c {
+        height: 400px;
+        width: 800px;
+    }
+</style>
+<main>
+    <canvas id="c"></canvas>
+</main>
+<script>
+    const width = 800;
+    const height = 400;
+    Module.onRuntimeInitialized = function () {
+        console.log(Module);
+        const ctx = document.getElementById('c').getContext('2d');
+        const pointer = Module._render();
+
+        const data = new Uint8ClampedArray(Module.asm.a.buffer, pointer, width * height * 4);
+        console.log(data, pointer)
+        const img = new ImageData(data, width, height);
+        ctx.putImageData(img, 0, 0);
+    }
+</script>
+</body>
+</html>
