@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: sudo apt-get install clang lld-11 llvm && sudo ln -s /usr/bin/wasm-ld-11 /usr/bin/wasm-ld && sudo chmod +x /usr/bin/wasm-ld
+      - run: ./compile.sh
+      - uses: actions/setup-node@master
+        with:
+          node-version: 16
+
+      - run: |
+          npm i -g yarn
+
+      - run: |
+          yarn global add vercel
+
+      - name: Deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd build
+          vercel deploy --name simple-vector --token $VERCEL_TOKEN --confirm --prod
