@@ -15,8 +15,25 @@
 </style>
 <main>
     <canvas id="c" width="800" height="800"></canvas>
+    <br/>
+    <h2>Command List</h2>
+    <ul>
+        <li>point x y</li>
+        <li>vector x y</li>
+        <li>add_vector start_x start_y x y</li>
+        <li>len x y</li>
+        <li>render</li>
+    </ul>
+    <label>
+        <input type="text" placeholder="Input command"/>
+    </label>
+    <button id="submit_btn">Submit</button>
 </main>
 <script type="module">
+    const REGEX = {
+        point: /point (.*) (.*)/
+    }
+
     async function init() {
         const {instance} = await WebAssembly.instantiateStreaming(
             fetch("./main.wasm")
@@ -27,12 +44,30 @@
         const height = 800;
         const ctx = document.getElementById('c').getContext('2d');
         instance.exports.init();
-        const pointer = instance.exports.render();
 
-        const data = new Uint8ClampedArray(instance.exports.memory.buffer, pointer, width * height * 4);
-        const img = new ImageData(data, width, height);
-        ctx.putImageData(img, 0, 0);
+        function render(){
+            const pointer = instance.exports.render();
+
+            const data = new Uint8ClampedArray(instance.exports.memory.buffer, pointer, width * height * 4);
+            const img = new ImageData(data, width, height);
+            ctx.putImageData(img, 0, 0);
+        }
+        render();
+
+        document.getElementById("submit_btn").onclick = (e) => {
+            let arr = new Float32Array(instance.exports.memory.buffer)
+            arr[0] = 114514
+            console.log(arr)
+            const input = document.querySelector("input").value
+            console.log(input)
+            if (input.match(REGEX.point)) {
+                let result = input.match(REGEX.point)
+                const x = +result[1], y = +result[2]
+            }
+            render()
+        }
     }
+
     init();
 </script>
 </body>
