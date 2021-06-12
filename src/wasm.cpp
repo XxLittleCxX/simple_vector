@@ -48,10 +48,21 @@ void draw_point(int x, int y, int color = WHITE) {
 }
 
 void DrawALine(int x0, int y0, int x1, int y1) {
+    bool reversed = false;
+    if(x0 > x1){
+        int tmp = x0;
+        x0 = x1;
+        x1 = tmp;
+
+        tmp = y0;
+        y0 = y1;
+        y1 = tmp;
+        reversed = true;
+    }
     double k = (y1 - y0) * 1.0 / (x1 - x0);
     double y = y0;
     for (auto x = x0; x <= x1; ++x) {
-        if (x1 - x <= 10) {
+        if (!reversed ? (x1 - x <= 10) : (x - x0 <= 10)) {
             draw_point(x, y, createRGBA(255, 0, 0, 255));
         } else {
             draw_point(x, y);
@@ -71,11 +82,15 @@ extern "C" void command_point(float *input) {
     draw_point(x, y);
 }
 
-extern "C" int command_vector(float *input) {
+extern "C" void command_vector(float *input) {
     int x = SV_WIDTH / 2 + input[0] * (float) 40;
     int y = SV_HEIGHT / 2 - input[1] * (float) 40;
     DrawALine(SV_WIDTH / 2, SV_HEIGHT / 2, x, y);
-    return y;
+}
+
+extern "C" void command_add_vector(float *input) {
+    DrawALine(SV_WIDTH / 2 + input[0] * (float) 40, SV_WIDTH / 2 - input[1] * (float) 40,
+              SV_WIDTH / 2 + input[2] * (float) 40, SV_WIDTH / 2 - input[3] * (float) 40);
 }
 
 int main() {

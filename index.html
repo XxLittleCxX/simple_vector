@@ -31,8 +31,9 @@
 </main>
 <script type="module">
     const REGEX = {
-        point: /point (.*) (.*)/,
-        vector: /vector (.*) (.*)/
+        point: /^point (.*) (.*)/,
+        vector: /^vector (.*) (.*)/,
+        add_vector: /^add_vector (.*) (.*) (.*) (.*)/,
     }
 
     async function init() {
@@ -73,6 +74,15 @@
                 memoryArr[1] = y
 
                 console.log(instance.exports.command_vector(0))
+            }else if (input.match(REGEX.add_vector)) {
+                let result = input.match(REGEX.add_vector)
+                console.log(result)
+                memoryArr[0] = +result[1]
+                memoryArr[1] = +result[2]
+                memoryArr[2] = +result[3]
+                memoryArr[3] = +result[4]
+
+                console.log(instance.exports.command_add_vector(0))
             }
             console.log(memoryArr)
             render()
