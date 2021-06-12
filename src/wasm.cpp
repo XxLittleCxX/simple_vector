@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "consts.h"
-
+#define SV_AXIS_THICKNESS 5
 int data[SV_WIDTH * SV_HEIGHT];
 
 const auto WHITE = createRGBA(254, 254, 254, 255);
@@ -13,7 +13,14 @@ extern "C" void init() {
         for (int x = 0; x < SV_WIDTH; x++) {
             auto color = BACKGROUND;
 
-            if (y >= (SV_HEIGHT / 2 - 5) && y <= (SV_HEIGHT / 2 + 5)) {
+            auto tmp = SV_AXIS_THICKNESS / 2;
+            if (y >= (SV_HEIGHT / 2 - tmp) && y <= (SV_HEIGHT / 2 + tmp)) {
+                color = AXIS;
+            }
+            if (x >= (SV_WIDTH / 2 - tmp) && x <= (SV_WIDTH / 2 + tmp)) {
+                color = AXIS;
+            }
+            if (y % 40 == 0 || x % 40 == 0) {
                 color = AXIS;
             }
             data[yw + x] = color;
