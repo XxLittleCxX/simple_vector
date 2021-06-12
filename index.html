@@ -53,17 +53,20 @@
             ctx.putImageData(img, 0, 0);
         }
         render();
-
+        let memoryArr = new Float32Array(instance.exports.memory.buffer)
+        window.memoryArr = memoryArr
         document.getElementById("submit_btn").onclick = (e) => {
-            let arr = new Float32Array(instance.exports.memory.buffer)
-            arr[0] = 114514
-            console.log(arr)
             const input = document.querySelector("input").value
             console.log(input)
             if (input.match(REGEX.point)) {
                 let result = input.match(REGEX.point)
                 const x = +result[1], y = +result[2]
+                memoryArr[0] = x
+                memoryArr[1] = y
+
+                console.log(instance.exports.command_point(0))
             }
+            console.log(memoryArr)
             render()
         }
     }
