@@ -1,6 +1,8 @@
 #include "utils.h"
 #include "consts.h"
+
 #define SV_AXIS_THICKNESS 5
+#define SV_POINT_THICKNESS 3
 int data[SV_WIDTH * SV_HEIGHT];
 
 const auto WHITE = createRGBA(254, 254, 254, 255);
@@ -28,16 +30,33 @@ extern "C" void init() {
     }
 }
 
-void draw_point(float __x, float __y) {
+void draw_point(int x, int y, int color = WHITE) {
     // x: -10 ~ 10 -> 0 ~ 800
     // x +10 *40
-    int x = SV_WIDTH / 2 + __x * (float) 40;
-    int y = SV_HEIGHT / 2 - __y * (float) 40;
-    for (int _y = y - 5; _y < y + 5; _y++) {
-        int yw = _y * SV_WIDTH;
-        for (int _x = x - 5; _x < x + 5; _x++) {
-            data[yw + _x] = WHITE;
+    for (int _y = y - SV_POINT_THICKNESS; _y < y + SV_POINT_THICKNESS; _y++) {
+        if (_y <= 0 || _y > SV_HEIGHT) {
+            continue;
         }
+        int yw = _y * SV_WIDTH;
+        for (int _x = x - SV_POINT_THICKNESS; _x < x + SV_POINT_THICKNESS; _x++) {
+            if (_x <= 0 || _x > SV_WIDTH) {
+                continue;
+            }
+            data[yw + _x] = color;
+        }
+    }
+}
+
+void DrawALine(int x0, int y0, int x1, int y1) {
+    double k = (y1 - y0) * 1.0 / (x1 - x0);
+    double y = y0;
+    for (auto x = x0; x <= x1; ++x) {
+        if (x1 - x <= 10) {
+            draw_point(x, y, createRGBA(255, 0, 0, 255));
+        } else {
+            draw_point(x, y);
+        }
+        y += k;
     }
 }
 
@@ -46,7 +65,17 @@ extern "C" int *render() {
 }
 
 extern "C" void command_point(float *input) {
-    draw_point(input[0], input[1]);
+
+    int x = SV_WIDTH / 2 + input[0] * (float) 40;
+    int y = SV_HEIGHT / 2 - input[1] * (float) 40;
+    draw_point(x, y);
+}
+
+extern "C" int command_vector(float *input) {
+    int x = SV_WIDTH / 2 + input[0] * (float) 40;
+    int y = SV_HEIGHT / 2 - input[1] * (float) 40;
+    DrawALine(SV_WIDTH / 2, SV_HEIGHT / 2, x, y);
+    return y;
 }
 
 int main() {
