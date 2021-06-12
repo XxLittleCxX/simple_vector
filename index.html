@@ -34,6 +34,7 @@
         point: /^point (.*) (.*)/,
         vector: /^vector (.*) (.*)/,
         add_vector: /^add_vector (.*) (.*) (.*) (.*)/,
+        len: /^len (.*) (.*)/,
     }
 
     async function init() {
@@ -47,13 +48,14 @@
         const ctx = document.getElementById('c').getContext('2d');
         instance.exports.init();
 
-        function render(){
+        function render() {
             const pointer = instance.exports.render();
 
             const data = new Uint8ClampedArray(instance.exports.memory.buffer, pointer, width * height * 4);
             const img = new ImageData(data, width, height);
             ctx.putImageData(img, 0, 0);
         }
+
         render();
         let memoryArr = new Float32Array(instance.exports.memory.buffer)
         window.memoryArr = memoryArr
@@ -74,7 +76,7 @@
                 memoryArr[1] = y
 
                 console.log(instance.exports.command_vector(0))
-            }else if (input.match(REGEX.add_vector)) {
+            } else if (input.match(REGEX.add_vector)) {
                 let result = input.match(REGEX.add_vector)
                 console.log(result)
                 memoryArr[0] = +result[1]
@@ -83,6 +85,10 @@
                 memoryArr[3] = +result[4]
 
                 console.log(instance.exports.command_add_vector(0))
+            } else if (input.match(REGEX.len)) {
+                let result = input.match(REGEX.len)
+                const x = +result[1], y = +result[2]
+                alert(Math.sqrt(x * x + y * y))
             }
             console.log(memoryArr)
             render()
